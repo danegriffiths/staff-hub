@@ -59,40 +59,32 @@ public class EmployeeGenerator {
         double randomNum = MIN + (MAX - MIN) * rand.nextDouble();
 
         BigDecimal bd = new BigDecimal(randomNum).setScale(2, RoundingMode.HALF_UP);
-        double newInput = bd.doubleValue();
-//        return newInput;
-        return new String();
+
+        String hours = bd.toString().substring(0,bd.toString().length() - 3);
+        String minutes = bd.toString().substring(bd.toString().length() - 2);
+        double convertedMinutes = Integer.parseInt(minutes) * 0.6;
+
+        int convertedMinutesToString = (int) convertedMinutes;
+        String newMinutes = String.format("%02d", convertedMinutesToString);
+        String date = hours + ":" + newMinutes + ":00";
+
+        return date;
     }
 
     private double dailyHoursGenerator() {
 
-        final double MAX = 7.4;
-        final double MIN = 4;
-        Random rand = new Random();
-
-        double randomNum = MIN + (MAX - MIN) * rand.nextDouble();
-
-        BigDecimal bd = new BigDecimal(randomNum).setScale(1, RoundingMode.HALF_UP);
-        double newInput = bd.doubleValue();
-        return newInput;
-    }
-
-    private String newDailyHoursGenerator() {
-
         List<Double> hours = new ArrayList<>();
         hours.add(4.0);
-        hours.add(4.5);
+        hours.add(4.3);
         hours.add(5.0);
-        hours.add(5.5);
+        hours.add(5.3);
         hours.add(6.0);
-        hours.add(6.5);
+        hours.add(6.3);
         hours.add(7.0);
-        hours.add(7.4);
+        hours.add(7.24);
 
         Random rand = new Random();
-        hours.get(rand.nextInt(hours.size()));
-
-        return new String();
+        return hours.get(rand.nextInt(hours.size()));
     }
 
     private String weeklyHoursGenerator(double dailyHours) {
@@ -104,9 +96,15 @@ public class EmployeeGenerator {
 
         double calculatedTotal = dailyHours * randomNum;
         BigDecimal bd = new BigDecimal(calculatedTotal).setScale(2, RoundingMode.HALF_UP);
-        double newInput = bd.doubleValue();
-        String date = bd+".00";
-        date = date.replace(".", ":");
+
+        String hours = bd.toString().substring(0,bd.toString().length() - 3);
+        String minutes = bd.toString().substring(bd.toString().length() - 2);
+        double convertedMinutes = Integer.parseInt(minutes) * 0.6;
+
+        int convertedMinutesToString = (int) convertedMinutes;
+        String newMinutes = String.format("%02d", convertedMinutesToString);
+        String date = hours + ":" + newMinutes + ":00";
+
         return date;
     }
 
@@ -157,14 +155,19 @@ public class EmployeeGenerator {
         forename = faker.name().firstName();
         surname = faker.name().lastName();
         emailAddress = forename.charAt(0) + surname + "@dvla.gov.uk";
-        dailyHoursPermitted = newDailyHoursGenerator();
-        weeklyHoursPermitted = weeklyHoursGenerator(dailyHoursPermitted);
+        double dailyHoursBeforeConversion = dailyHoursGenerator();
+        weeklyHoursPermitted = weeklyHoursGenerator(dailyHoursBeforeConversion);
         flexiBalance = flexiBalanceGenerator();
         department = departmentGenerator();
         manager = isManager();
         administrator = isAdministrator();
         password = surname.toLowerCase() + forename.toLowerCase().charAt(0);
         managerId = null;
+
+
+        BigDecimal bd = new BigDecimal(dailyHoursBeforeConversion).setScale(2, RoundingMode.HALF_UP);
+        String date = bd+".00";
+        dailyHoursPermitted = date.replace(".", ":");
 
         return new Employee(String.valueOf(staffNumber), forename, surname, emailAddress, department, dailyHoursPermitted,
             weeklyHoursPermitted, flexiBalance, manager, administrator, password, managerId);
